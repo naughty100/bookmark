@@ -61,6 +61,12 @@ export default function Background({ items, setItems, onSelectBookmark }: Backgr
     onSelectBookmark(selectedItem);
   };
 
+  const handleResize = (id: number, newSize: { width: number; height: number }) => {
+    setItems(items.map(item =>
+      item.id === id ? { ...item, size: newSize } : item
+    ));
+  };
+
   return (
     <div className="flex-1">
       <div 
@@ -86,6 +92,7 @@ export default function Background({ items, setItems, onSelectBookmark }: Backgr
               e.stopPropagation();
               handleSelect(item.id);
             }}
+            onResize={handleResize}
           />
         ))}
       </div>
