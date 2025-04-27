@@ -2,8 +2,8 @@ import Background from './components/Background';
 
 export default function Home() {
   return (
-    <div>
+    <main className="min-h-screen flex">
       <Background />
-    </div>
+    </main>
   );
 }

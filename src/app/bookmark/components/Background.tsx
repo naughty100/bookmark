@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, RefObject } from 'react';
-import Draggable from 'react-draggable';
+import BookmarkItem from './BookmarkItem';
+import OperationPanel from './OperationPanel';
 
 interface DraggableItem {
   id: number;
@@ -51,56 +52,29 @@ export default function Background() {
   };
 
   return (
-    <div className="p-5 w-full min-h-screen">
-      <div className="relative w-full h-[80vh] bg-gradient-to-br from-blue-50 to-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
-        <button 
-          onClick={addNewItem} 
-          className="absolute top-5 left-5 px-4 py-2 bg-blue-500 text-white border-none rounded-lg cursor-pointer hover:bg-blue-600 z-10 shadow-lg"
-        >
-          添加便签
-        </button>
+    <div className="flex w-full min-h-screen">
+      {/* 左侧内容区 */}
+      <div className="flex-1 p-5">
+        <div className="relative w-full h-[calc(100vh-2.5rem)] bg-gradient-to-br from-blue-50 to-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
           {items.map((item) => (
-            <Draggable
+            <BookmarkItem
               key={item.id}
+              id={item.id}
+              content={item.content}
               position={item.position}
-              onDrag={(e, data) => handleDrag(item.id, e, data)}
-              bounds="parent"
+              isEditing={item.isEditing}
               nodeRef={nodeRefs.current[item.id]}
-            >
-              <div 
-                ref={nodeRefs.current[item.id]}
-                className="group p-4 bg-white border border-gray-200 rounded-lg cursor-move select-none shadow-lg min-w-[150px] relative hover:scale-102"
-              >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteItem(item.id);
-                  }}
-                  className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-red-500 hover:text-red-600"
-                >
-                  ×
-                </button>
-                {item.isEditing ? (
-                  <input
-                    type="text"
-                    value={item.content}
-                    onChange={(e) => handleContentChange(item.id, e.target.value)}
-                    onBlur={() => handleContentChange(item.id, item.content)}
-                    className="w-full bg-transparent border-none outline-none text-center"
-                    autoFocus
-                  />
-                ) : (
-                  <div 
-                    onDoubleClick={() => startEditing(item.id)}
-                    className="text-center break-words"
-                  >
-                    {item.content}
-                  </div>
-                )}
-              </div>
-            </Draggable>
+              onDrag={handleDrag}
+              onDelete={deleteItem}
+              onEdit={startEditing}
+              onContentChange={handleContentChange}
+            />
           ))}
+        </div>
       </div>
+
+      {/* 右侧操作栏 */}
+      <OperationPanel onAddBookmark={addNewItem} />
     </div>
   );
 }
