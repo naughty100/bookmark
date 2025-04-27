@@ -8,6 +8,8 @@ interface DraggableItem {
   content: string;
   position: { x: number; y: number };
   isEditing: boolean;
+  size?: { width: number; height: number };
+  imageUrl?: string;
 }
 
 export default function Home() {
@@ -17,9 +19,10 @@ export default function Home() {
   const addNewItem = () => {
     const newItem: DraggableItem = {
       id: nextId,
-      content: '新便签',
+      content: '',
       position: { x: Math.random() * 500, y: Math.random() * 300 },
-      isEditing: false
+      isEditing: false,
+      size: { width: 200, height: 200 }
     };
     setItems([...items, newItem]);
     setNextId(nextId + 1);

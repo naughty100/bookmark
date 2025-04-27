@@ -7,6 +7,8 @@ interface DraggableItem {
   content: string;
   position: { x: number; y: number };
   isEditing: boolean;
+  size?: { width: number; height: number };
+  imageUrl?: string;
 }
 
 interface BackgroundProps {
@@ -59,6 +61,18 @@ export default function Background({ items, setItems }: BackgroundProps) {
     ));
   };
 
+  const handleResize = (id: number, size: { width: number; height: number }) => {
+    setItems(items.map(item =>
+      item.id === id ? { ...item, size } : item
+    ));
+  };
+
+  const handleImageUpload = (id: number, imageUrl: string) => {
+    setItems(items.map(item =>
+      item.id === id ? { ...item, imageUrl } : item
+    ));
+  };
+
   return (
     <div className="flex-1">
       <div className="relative w-full h-[calc(100vh-2.5rem)] bg-gradient-to-br from-blue-50 to-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
@@ -69,11 +83,15 @@ export default function Background({ items, setItems }: BackgroundProps) {
             content={item.content}
             position={item.position}
             isEditing={item.isEditing}
+            size={item.size}
+            imageUrl={item.imageUrl}
             nodeRef={nodeRefs.current[item.id] || React.createRef()}
             onDrag={handleDrag}
             onDelete={deleteItem}
             onEdit={startEditing}
             onContentChange={handleContentChange}
+            onResize={handleResize}
+            onImageUpload={handleImageUpload}
           />
         ))}
       </div>
