@@ -27,10 +27,10 @@ export default function BookmarkItem({
 }: BookmarkItemProps) {
   return (
     <Draggable
+      nodeRef={nodeRef}
       position={position}
       onDrag={(e, data) => onDrag(id, e, data)}
       bounds="parent"
-      nodeRef={nodeRef}
     >
       <div 
         ref={nodeRef}

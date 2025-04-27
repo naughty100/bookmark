@@ -1,7 +1,6 @@
 'use client';
-import React, { useState, useRef, RefObject } from 'react';
+import React, { useRef, RefObject, useEffect } from 'react';
 import BookmarkItem from './BookmarkItem';
-import OperationPanel from './OperationPanel';
 
 interface DraggableItem {
   id: number;
@@ -10,22 +9,31 @@ interface DraggableItem {
   isEditing: boolean;
 }
 
-export default function Background() {
-  const [items, setItems] = useState<DraggableItem[]>([]);
-  const [nextId, setNextId] = useState(1);
+interface BackgroundProps {
+  items: DraggableItem[];
+  setItems: React.Dispatch<React.SetStateAction<DraggableItem[]>>;
+}
+
+export default function Background({ items, setItems }: BackgroundProps) {
   const nodeRefs = useRef<{ [key: number]: RefObject<HTMLDivElement> }>({});
 
-  const addNewItem = () => {
-    const newItem: DraggableItem = {
-      id: nextId,
-      content: `便签 ${nextId}`,
-      position: { x: Math.random() * 100, y: Math.random() * 100 },
-      isEditing: false,
-    };
-    nodeRefs.current[nextId] = React.createRef();
-    setItems([...items, newItem]);
-    setNextId(nextId + 1);
-  };
+  // Initialize or clean up refs when items change
+  useEffect(() => {
+    // Remove refs for items that no longer exist
+    Object.keys(nodeRefs.current).forEach(key => {
+      const numKey = parseInt(key);
+      if (!items.find(item => item.id === numKey)) {
+        delete nodeRefs.current[numKey];
+      }
+    });
+
+    // Add refs for new items
+    items.forEach(item => {
+      if (!nodeRefs.current[item.id]) {
+        nodeRefs.current[item.id] = React.createRef<HTMLDivElement>();
+      }
+    });
+  }, [items]);
 
   const handleDrag = (id: number, e: any, data: any) => {
     setItems(items.map(item => 
@@ -52,29 +60,23 @@ export default function Background() {
   };
 
   return (
-    <div className="flex w-full min-h-screen">
-      {/* 左侧内容区 */}
-      <div className="flex-1 p-5">
-        <div className="relative w-full h-[calc(100vh-2.5rem)] bg-gradient-to-br from-blue-50 to-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
-          {items.map((item) => (
-            <BookmarkItem
-              key={item.id}
-              id={item.id}
-              content={item.content}
-              position={item.position}
-              isEditing={item.isEditing}
-              nodeRef={nodeRefs.current[item.id]}
-              onDrag={handleDrag}
-              onDelete={deleteItem}
-              onEdit={startEditing}
-              onContentChange={handleContentChange}
-            />
-          ))}
-        </div>
+    <div className="flex-1">
+      <div className="relative w-full h-[calc(100vh-2.5rem)] bg-gradient-to-br from-blue-50 to-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+        {items.map((item) => (
+          <BookmarkItem
+            key={item.id}
+            id={item.id}
+            content={item.content}
+            position={item.position}
+            isEditing={item.isEditing}
+            nodeRef={nodeRefs.current[item.id] || React.createRef()}
+            onDrag={handleDrag}
+            onDelete={deleteItem}
+            onEdit={startEditing}
+            onContentChange={handleContentChange}
+          />
+        ))}
       </div>
-
-      {/* 右侧操作栏 */}
-      <OperationPanel onAddBookmark={addNewItem} />
     </div>
   );
 }
