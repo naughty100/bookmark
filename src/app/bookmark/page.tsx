@@ -53,11 +53,17 @@ export default function Home() {
   
   return (
     <main className="min-h-screen flex">
+      {/* 背景板 */}
       <Background 
         items={items} 
         setItems={setItems} 
         onSelectBookmark={setSelectedBookmark}
       />
+      
+      {/* 颜色面板 */}
+      {/* todo */}
+
+      {/* 操作面板 */}
       <OperationPanel 
         onAddBookmark={addNewItem} 
         selectedBookmark={selectedBookmark}
