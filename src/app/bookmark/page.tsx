@@ -8,13 +8,15 @@ interface DraggableItem {
   content: string;
   position: { x: number; y: number };
   isEditing: boolean;
-  size?: { width: number; height: number };
+  size: { width: number; height: number };
   imageUrl?: string;
+  selected?: boolean;
 }
 
 export default function Home() {
   const [items, setItems] = useState<DraggableItem[]>([]);
   const [nextId, setNextId] = useState(1);
+  const [selectedBookmark, setSelectedBookmark] = useState<DraggableItem>();
 
   const addNewItem = () => {
     const newItem: DraggableItem = {
@@ -27,11 +29,41 @@ export default function Home() {
     setItems([...items, newItem]);
     setNextId(nextId + 1);
   };
+
+  const handleBookmarkConfigChange = (config: Partial<{ size: { width: number; height: number } }>) => {
+    if (selectedBookmark) {
+      setItems(items.map(item =>
+        item.id === selectedBookmark.id
+          ? { ...item, ...config }
+          : item
+      ));
+    }
+  };
+
+  const handleImageUpload = (file: File) => {
+    if (selectedBookmark) {
+      const url = URL.createObjectURL(file);
+      setItems(items.map(item =>
+        item.id === selectedBookmark.id
+          ? { ...item, imageUrl: url }
+          : item
+      ));
+    }
+  };
   
   return (
     <main className="min-h-screen flex">
-      <Background items={items} setItems={setItems} />
-      <OperationPanel onAddBookmark={addNewItem} />
+      <Background 
+        items={items} 
+        setItems={setItems} 
+        onSelectBookmark={setSelectedBookmark}
+      />
+      <OperationPanel 
+        onAddBookmark={addNewItem} 
+        selectedBookmark={selectedBookmark}
+        onBookmarkConfigChange={handleBookmarkConfigChange}
+        onImageUpload={handleImageUpload}
+      />
     </main>
   );
 }

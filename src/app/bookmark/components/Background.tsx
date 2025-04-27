@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, RefObject, useEffect } from 'react';
+import React, { useRef, RefObject } from 'react';
 import BookmarkItem from './BookmarkItem';
 
 interface DraggableItem {
@@ -7,35 +7,19 @@ interface DraggableItem {
   content: string;
   position: { x: number; y: number };
   isEditing: boolean;
-  size?: { width: number; height: number };
+  size: { width: number; height: number };
   imageUrl?: string;
+  selected?: boolean;
 }
 
 interface BackgroundProps {
   items: DraggableItem[];
   setItems: React.Dispatch<React.SetStateAction<DraggableItem[]>>;
+  onSelectBookmark: (bookmark: DraggableItem | undefined) => void;
 }
 
-export default function Background({ items, setItems }: BackgroundProps) {
+export default function Background({ items, setItems, onSelectBookmark }: BackgroundProps) {
   const nodeRefs = useRef<{ [key: number]: RefObject<HTMLDivElement> }>({});
-
-  // Initialize or clean up refs when items change
-  useEffect(() => {
-    // Remove refs for items that no longer exist
-    Object.keys(nodeRefs.current).forEach(key => {
-      const numKey = parseInt(key);
-      if (!items.find(item => item.id === numKey)) {
-        delete nodeRefs.current[numKey];
-      }
-    });
-
-    // Add refs for new items
-    items.forEach(item => {
-      if (!nodeRefs.current[item.id]) {
-        nodeRefs.current[item.id] = React.createRef<HTMLDivElement>();
-      }
-    });
-  }, [items]);
 
   const handleDrag = (id: number, e: any, data: any) => {
     setItems(items.map(item => 
@@ -46,7 +30,13 @@ export default function Background({ items, setItems }: BackgroundProps) {
   };
 
   const deleteItem = (id: number) => {
-    setItems(items.filter(item => item.id !== id));
+    setItems(prevItems => {
+      const itemToDelete = prevItems.find(item => item.id === id);
+      if (itemToDelete?.selected) {
+        onSelectBookmark(undefined);
+      }
+      return prevItems.filter(item => item.id !== id);
+    });
   };
 
   const startEditing = (id: number) => {
@@ -61,37 +51,41 @@ export default function Background({ items, setItems }: BackgroundProps) {
     ));
   };
 
-  const handleResize = (id: number, size: { width: number; height: number }) => {
-    setItems(items.map(item =>
-      item.id === id ? { ...item, size } : item
-    ));
-  };
-
-  const handleImageUpload = (id: number, imageUrl: string) => {
-    setItems(items.map(item =>
-      item.id === id ? { ...item, imageUrl } : item
-    ));
+  const handleSelect = (id: number) => {
+    const newItems = items.map(item => ({
+      ...item,
+      selected: item.id === id
+    }));
+    setItems(newItems);
+    const selectedItem = newItems.find(item => item.id === id);
+    onSelectBookmark(selectedItem);
   };
 
   return (
     <div className="flex-1">
-      <div className="relative w-full h-[calc(100vh-2.5rem)] bg-gradient-to-br from-blue-50 to-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+      <div 
+        className="relative w-full h-[calc(100vh-2.5rem)] bg-gradient-to-br from-blue-50 to-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden"
+        onClick={() => onSelectBookmark(undefined)}
+      >
         {items.map((item) => (
           <BookmarkItem
             key={item.id}
             id={item.id}
             content={item.content}
             position={item.position}
-            isEditing={item.isEditing}
             size={item.size}
+            isEditing={item.isEditing}
+            selected={item.selected}
             imageUrl={item.imageUrl}
-            nodeRef={nodeRefs.current[item.id] || React.createRef()}
+            nodeRef={nodeRefs.current[item.id] || (nodeRefs.current[item.id] = React.createRef())}
             onDrag={handleDrag}
             onDelete={deleteItem}
             onEdit={startEditing}
             onContentChange={handleContentChange}
-            onResize={handleResize}
-            onImageUpload={handleImageUpload}
+            onSelect={(e) => {
+              e.stopPropagation();
+              handleSelect(item.id);
+            }}
           />
         ))}
       </div>
