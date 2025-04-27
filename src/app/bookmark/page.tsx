@@ -24,7 +24,7 @@ export default function Home() {
       content: '',
       position: { x: Math.random() * 500, y: Math.random() * 300 },
       isEditing: false,
-      size: { width: 200, height: 200 }
+      size: { width: 200, height: 600 } // 设置为 1:3 比例
     };
     setItems([...items, newItem]);
     setNextId(nextId + 1);

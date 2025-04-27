@@ -3,6 +3,14 @@ import React, { RefObject } from 'react';
 import Draggable from 'react-draggable';
 import Image from 'next/image';
 
+interface ShadowConfig {
+  angle: number;
+  distance: number;
+  blur: number;
+  color: string;
+  opacity: number;
+}
+
 interface BookmarkItemProps {
   id: number;
   content: string;
@@ -11,6 +19,7 @@ interface BookmarkItemProps {
   isEditing: boolean;
   selected?: boolean;
   imageUrl?: string;
+  shadow?: ShadowConfig;
   nodeRef: RefObject<HTMLDivElement>;
   onDrag: (id: number, e: any, data: any) => void;
   onDelete: (id: number) => void;
@@ -28,6 +37,7 @@ export default function BookmarkItem({
   isEditing,
   selected,
   imageUrl,
+  shadow,
   nodeRef,
   onDrag,
   onDelete,
@@ -35,6 +45,16 @@ export default function BookmarkItem({
   onContentChange,
   onSelect,
 }: BookmarkItemProps) {
+  const getShadowStyle = (shadow?: ShadowConfig) => {
+    if (!shadow) return {};
+    const { angle, distance, blur, color, opacity } = shadow;
+    const x = Math.cos(angle * Math.PI / 180) * distance;
+    const y = Math.sin(angle * Math.PI / 180) * distance;
+    return {
+      boxShadow: `${x}px ${y}px ${blur}px ${color}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`
+    };
+  };
+
   return (
     <Draggable
       nodeRef={nodeRef}
@@ -44,7 +64,11 @@ export default function BookmarkItem({
     >
       <div ref={nodeRef} className="absolute">
         <div
-          style={{ width: size.width, height: size.height }}
+          style={{ 
+            width: size.width, 
+            height: size.height,
+            ...getShadowStyle(shadow)
+          }}
           className={`group w-full h-full bg-white border rounded-lg cursor-move select-none shadow-lg overflow-hidden
             ${selected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
           onClick={onSelect}
