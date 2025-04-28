@@ -44,11 +44,11 @@ export default function BookmarkOp({
   onImageUpload 
 }: BookmarkOpProps) {
   const [shadow, setShadow] = useState<ShadowConfig>({
-    angle: 135,
-    distance: 5,
-    blur: 10,
-    color: '#000000',
-    opacity: 0.2
+    angle: 46,
+    distance: 10,
+    blur: 17,
+    color: '#333333',
+    opacity: 0.46
   });
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -530,6 +530,10 @@ export default function BookmarkOp({
       {cropModalOpen && selectedImage && (
         <ImageCropModal
           imageUrl={selectedImage}
+          aspectRatio={aspectRatio === 'custom' 
+            ? customRatio.width / customRatio.height
+            : Number(aspectRatio.split(':')[0]) / Number(aspectRatio.split(':')[1])
+          }
           onCancel={() => {
             setCropModalOpen(false);
             setSelectedImage(null);
