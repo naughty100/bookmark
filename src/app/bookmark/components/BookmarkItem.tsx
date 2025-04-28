@@ -69,8 +69,7 @@ export default function BookmarkItem({
             height: size.height,
             ...getShadowStyle(shadow)
           }}
-          className={`group w-full h-full bg-white border rounded-lg cursor-move select-none shadow-lg overflow-hidden
-            ${selected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
+          className={`group w-full h-full bg-white  cursor-move select-none overflow-hidden`}
           onClick={onSelect}
         >
           {/* 背景图片 */}
