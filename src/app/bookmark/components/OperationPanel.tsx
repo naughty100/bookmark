@@ -13,6 +13,7 @@ interface ShadowConfig {
 
 interface BookmarkConfig {
   size: { width: number; height: number };
+  position?: { x: number; y: number };
   aspectRatio: string;
   keepAspectRatio: boolean;
   shadow?: ShadowConfig;
@@ -24,6 +25,7 @@ interface OperationPanelProps {
     id: number;
     content: string;
     size: { width: number; height: number };
+    position: { x: number; y: number };
     imageUrl?: string;
     shadow?: ShadowConfig;
   };
@@ -153,6 +155,17 @@ export default function OperationPanel({
     }
   };
 
+  const handlePositionChange = useCallback((axis: 'x' | 'y', value: number) => {
+    if (selectedBookmark) {
+      onBookmarkConfigChange({
+        position: {
+          ...selectedBookmark.position,
+          [axis]: value
+        }
+      });
+    }
+  }, [selectedBookmark, onBookmarkConfigChange]);
+
   return (
     <div className="w-80 bg-gray-50 p-4 border-l border-gray-200 flex flex-col h-screen">
       {/* Tabs */}
@@ -185,6 +198,79 @@ export default function OperationPanel({
             <div className="mt-4 space-y-4">
               <h3 className="font-medium text-gray-900">书签配置</h3>
               
+              {/* Position Controls */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">位置</label>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs text-gray-500">X: {selectedBookmark.position.x}px</label>
+                      <input
+                        type="number"
+                        value={selectedBookmark.position.x}
+                        onChange={(e) => handlePositionChange('x', parseInt(e.target.value))}
+                        className="w-16 text-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="relative mt-2">
+                      <div className="absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2 bg-gray-200 rounded"></div>
+                      <input
+                        type="range"
+                        min="0"
+                        max={1000}
+                        value={selectedBookmark.position.x}
+                        onChange={(e) => handlePositionChange('x', parseInt(e.target.value))}
+                        className="relative w-full h-2 appearance-none bg-transparent cursor-pointer
+                          [&::-webkit-slider-thumb]:appearance-none
+                          [&::-webkit-slider-thumb]:w-4
+                          [&::-webkit-slider-thumb]:h-4
+                          [&::-webkit-slider-thumb]:rounded-full
+                          [&::-webkit-slider-thumb]:bg-blue-600
+                          [&::-webkit-slider-thumb]:border-2
+                          [&::-webkit-slider-thumb]:border-white
+                          [&::-webkit-slider-thumb]:shadow-md
+                          [&::-webkit-slider-thumb]:cursor-pointer
+                          [&::-webkit-slider-thumb]:transition-all
+                          [&::-webkit-slider-thumb]:hover:scale-110"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs text-gray-500">Y: {selectedBookmark.position.y}px</label>
+                      <input
+                        type="number"
+                        value={selectedBookmark.position.y}
+                        onChange={(e) => handlePositionChange('y', parseInt(e.target.value))}
+                        className="w-16 text-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="relative mt-2">
+                      <div className="absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2 bg-gray-200 rounded"></div>
+                      <input
+                        type="range"
+                        min="0"
+                        max={1000}
+                        value={selectedBookmark.position.y}
+                        onChange={(e) => handlePositionChange('y', parseInt(e.target.value))}
+                        className="relative w-full h-2 appearance-none bg-transparent cursor-pointer
+                          [&::-webkit-slider-thumb]:appearance-none
+                          [&::-webkit-slider-thumb]:w-4
+                          [&::-webkit-slider-thumb]:h-4
+                          [&::-webkit-slider-thumb]:rounded-full
+                          [&::-webkit-slider-thumb]:bg-blue-600
+                          [&::-webkit-slider-thumb]:border-2
+                          [&::-webkit-slider-thumb]:border-white
+                          [&::-webkit-slider-thumb]:shadow-md
+                          [&::-webkit-slider-thumb]:cursor-pointer
+                          [&::-webkit-slider-thumb]:transition-all
+                          [&::-webkit-slider-thumb]:hover:scale-110"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Size Controls */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">尺寸</label>

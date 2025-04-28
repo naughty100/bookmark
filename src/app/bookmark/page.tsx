@@ -46,6 +46,7 @@ export default function Home() {
 
   const handleBookmarkConfigChange = (config: Partial<{
     size: { width: number; height: number };
+    position: { x: number; y: number };
     shadow?: {
       angle: number;
       distance: number;
@@ -55,25 +56,33 @@ export default function Home() {
     };
   }>) => {
     if (selectedBookmark) {
-      setItems(items.map(item =>
+      const newItems = items.map(item =>
         item.id === selectedBookmark.id
-          ? { ...item, ...config }
+          ? {
+              ...item,
+              ...(config.size && { size: config.size }),
+              ...(config.position && { position: config.position }),
+              ...(config.shadow && { shadow: config.shadow })
+            }
           : item
-      ));
+      );
 
-      // 更新选中的书签状态，以确保 UI 即时更新
-      setSelectedBookmark(prev => prev ? { ...prev, ...config } : prev);
+      setItems(newItems);
+      setSelectedBookmark(newItems.find(item => item.id === selectedBookmark.id));
     }
   };
 
   const handleImageUpload = (file: File) => {
     if (selectedBookmark) {
       const url = URL.createObjectURL(file);
-      setItems(items.map(item =>
+      const newItems = items.map(item =>
         item.id === selectedBookmark.id
           ? { ...item, imageUrl: url }
           : item
-      ));
+      );
+
+      setItems(newItems);
+      setSelectedBookmark(newItems.find(item => item.id === selectedBookmark.id));
     }
   };
   
