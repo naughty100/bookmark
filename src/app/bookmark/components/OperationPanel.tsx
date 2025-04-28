@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import AddBookmarkButton from './AddBookmarkButton';
 import Image from 'next/image';
+import ImageCropModal from './ImageCropModal';
 
 interface ShadowConfig {
   angle: number;
@@ -58,6 +59,8 @@ export default function OperationPanel({
     color: '#000000',
     opacity: 0.2
   });
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedBookmark?.shadow) {
@@ -151,8 +154,41 @@ export default function OperationPanel({
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onImageUpload(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setSelectedImage(reader.result);
+          setCropModalOpen(true);
+        }
+      };
+      reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropComplete = (croppedImage: string) => {
+    setCropModalOpen(false);
+    setSelectedImage(null);
+    const dataUrlToFile = (dataUrl: string): File => {
+      const arr = dataUrl.split(',');
+      const mime = arr[0].match(/:(.*?);/)?.[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], 'cropped-image.png', { type: mime });
+    };
+    onImageUpload(dataUrlToFile(croppedImage));
+  };
+
+  const calculateAspectRatio = (): number | undefined => {
+    if (!keepAspectRatio) return undefined;
+    if (aspectRatio === 'custom') {
+      return customRatio.width / customRatio.height;
+    }
+    const [width, height] = aspectRatio.split(':').map(Number);
+    return width / height;
   };
 
   const handlePositionChange = useCallback((axis: 'x' | 'y', value: number) => {
@@ -586,6 +622,19 @@ export default function OperationPanel({
         <div className="p-4">
           <p className="text-sm text-gray-500">设置面板内容</p>
         </div>
+      )}
+
+      {/* Crop Modal */}
+      {cropModalOpen && selectedImage && (
+        <ImageCropModal
+          imageUrl={selectedImage}
+          aspectRatio={calculateAspectRatio()}
+          onCancel={() => {
+            setCropModalOpen(false);
+            setSelectedImage(null);
+          }}
+          onCrop={handleCropComplete}
+        />
       )}
     </div>
   );
