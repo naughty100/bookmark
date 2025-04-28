@@ -152,6 +152,13 @@ export default function ColorPanel({ onColorSelect, selectedColor }: ColorPanelP
     setContextMenu(null);
   };
 
+  // 清空所有自定义颜色
+  const handleClearColors = () => {
+    if (window.confirm('确定要清空所有自定义颜色吗？')) {
+      saveCustomColors([]);
+    }
+  };
+
   // 处理颜色选择
   const handleColorSelect = (color: string) => {
     onColorSelect(color);
@@ -274,7 +281,18 @@ export default function ColorPanel({ onColorSelect, selectedColor }: ColorPanelP
       {/* 自定义颜色 */}
       <div>
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-sm font-medium text-gray-700">自定义颜色</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-medium text-gray-700">自定义颜色</h3>
+            {customColors.length > 0 && (
+              <button
+                onClick={handleClearColors}
+                className="text-xs text-gray-500 hover:text-red-500"
+                title="清空所有自定义颜色"
+              >
+                清空
+              </button>
+            )}
+          </div>
           <div className="flex gap-2">
             <input
               ref={fileInputRef}

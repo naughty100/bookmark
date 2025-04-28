@@ -133,13 +133,19 @@ export default function BackgroundOp({ config, onConfigChange }: BackgroundOpPro
 
   const addGradientColor = () => {
     if (config.gradientColors.length < 5) {
+      // 计算新颜色的位置，保证均匀分布
+      const totalColors = config.gradientColors.length;
+      const newPosition = totalColors === 0 ? 50 : 
+                         totalColors === 1 ? 100 : 
+                         Math.round((totalColors) * 100 / (totalColors + 1));
+      
       onConfigChange({
         ...config,
         gradientColors: [
           ...config.gradientColors,
           {
             color: '#000000',
-            position: Math.round((config.gradientColors.length) * 100 / (config.gradientColors.length))
+            position: newPosition
           }
         ]
       });
@@ -193,7 +199,7 @@ export default function BackgroundOp({ config, onConfigChange }: BackgroundOpPro
                 max="3000"
                 value={config.size.width}
                 onChange={(e) => handleSizeChange('width', parseInt(e.target.value))}
-                className="w-20 text-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-10 text-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <input
@@ -214,7 +220,7 @@ export default function BackgroundOp({ config, onConfigChange }: BackgroundOpPro
                 max="3000"
                 value={config.size.height}
                 onChange={(e) => handleSizeChange('height', parseInt(e.target.value))}
-                className="w-20 text-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-10 text-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <input
@@ -319,31 +325,52 @@ export default function BackgroundOp({ config, onConfigChange }: BackgroundOpPro
               )}
             </div>
             {config.gradientColors.map((gc, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <ColorPanel
-                  selectedColor={gc.color}
-                  onColorSelect={(color) => handleGradientColorChange(index, color)}
-                />
-                <div className="w-20">
+              <div key={index} className="space-y-2 bg-gray-50 p-3 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-500">颜色 {index + 1}</span>
+                  {config.gradientColors.length > 2 && (
+                    <button
+                      onClick={() => removeGradientColor(index)}
+                      className="text-red-500 hover:text-red-600 p-1"
+                      title="删除此颜色"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                
+                {/* 颜色选择 */}
+                <div className="w-full">
+                  <ColorPanel
+                    selectedColor={gc.color}
+                    onColorSelect={(color) => handleGradientColorChange(index, color)}
+                  />
+                </div>
+
+                {/* 位置控制 */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs text-gray-500">位置: {gc.position}%</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={gc.position}
+                      onChange={(e) => handleGradientPositionChange(index, parseInt(e.target.value))}
+                      className="w-16 text-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
                   <input
-                    type="number"
+                    type="range"
                     min="0"
                     max="100"
                     value={gc.position}
                     onChange={(e) => handleGradientPositionChange(index, parseInt(e.target.value))}
-                    className="w-full text-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full"
                   />
                 </div>
-                {config.gradientColors.length > 2 && (
-                  <button
-                    onClick={() => removeGradientColor(index)}
-                    className="text-red-500 hover:text-red-600"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
               </div>
             ))}
           </div>
