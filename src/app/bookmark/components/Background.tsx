@@ -1,6 +1,7 @@
 'use client';
-import React, { useRef, RefObject } from 'react';
+import React, { useRef } from 'react';
 import BookmarkItem from './BookmarkItem';
+import TextItem from './TextItem';
 
 interface DraggableItem {
   id: number;
@@ -30,24 +31,49 @@ interface BackgroundConfig {
   gradientAngle: number;
 }
 
+interface TextConfig {
+  id: number;
+  text: string;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  style: {
+    fontSize: number;
+    fontFamily: string;
+    rotate: number;
+    direction: 'horizontal' | 'vertical';
+  };
+}
+
 interface BackgroundProps {
   items: DraggableItem[];
   setItems: React.Dispatch<React.SetStateAction<DraggableItem[]>>;
   onSelectBookmark: (bookmark: DraggableItem | undefined) => void;
   backgroundConfig?: BackgroundConfig;
+  texts: TextConfig[];
+  onTextConfigChange: (id: number, config: Partial<TextConfig>) => void;
+  onTextDelete: (id: number) => void;
+  onTextSelect: (id: number | null) => void;
+  selectedTextId: number | null;
 }
 
-export default function Background({ 
-  items, 
-  setItems, 
+export default function Background({
+  items,
+  setItems,
   onSelectBookmark,
-  backgroundConfig 
+  backgroundConfig,
+  texts,
+  onTextConfigChange,
+  onTextDelete,
+  onTextSelect,
+  selectedTextId
 }: BackgroundProps) {
-  const nodeRefs = useRef<{ [key: number]: RefObject<HTMLDivElement> }>({});
+  const nodeRefs = useRef<{ [key: number]: React.RefObject<HTMLDivElement> }>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textRefs = useRef<{ [key: number]: React.RefObject<HTMLDivElement> }>({});
 
   const handleDrag = (id: number, e: any, data: any) => {
-    setItems(items.map(item => 
-      item.id === id 
+    setItems(items.map(item =>
+      item.id === id
         ? { ...item, position: { x: data.x, y: data.y } }
         : item
     ));
@@ -98,14 +124,14 @@ export default function Background({
     }
 
     const { colorType, solidColor, gradientColors, gradientAngle } = backgroundConfig;
-    
+
     if (colorType === 'solid') {
       return solidColor;
     }
 
     const sortedColors = [...gradientColors].sort((a, b) => a.position - b.position);
     const colorStops = sortedColors.map(gc => `${gc.color} ${gc.position}%`).join(', ');
-    
+
     if (colorType === 'linear-gradient') {
       return `linear-gradient(${gradientAngle}deg, ${colorStops})`;
     } else if (colorType === 'radial-gradient') {
@@ -115,9 +141,32 @@ export default function Background({
     return 'bg-gradient-to-br from-blue-50 to-white';
   };
 
+  const handleTextDrag = (id: number, e: any, data: any) => {
+    if (!containerRef.current) return;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const x = (data.x / containerRect.width) * 100;
+    const y = (data.y / containerRect.height) * 100;
+
+    onTextConfigChange(id, {
+      position: { x, y }
+    });
+  };
+
+  const handleTextClick = (id: number) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onTextSelect(id);
+  };
+
+  const handleBackgroundClick = () => {
+    onTextSelect(null);
+  };
+
   return (
-    <div 
+    <div
+      ref={containerRef}
       className="relative bg-white shadow-lg overflow-hidden"
+      onClick={handleBackgroundClick}
       style={{
         width: backgroundConfig?.size.width || '100%',
         height: backgroundConfig?.size.height || '100%',
@@ -150,6 +199,27 @@ export default function Background({
             onContentChange={handleContentChange}
             onSelect={handleSelect(item.id)}
             onResize={handleResize}
+          />
+        );
+      })}
+      {texts.map(text => {
+        if (!textRefs.current[text.id]) {
+          textRefs.current[text.id] = React.createRef();
+        }
+
+        return (
+          <TextItem
+            key={text.id}
+            id={text.id}
+            text={text.text}
+            position={text.position}
+            size={text.size}
+            style={text.style}
+            selected={selectedTextId === text.id}
+            nodeRef={textRefs.current[text.id]}
+            onDrag={handleTextDrag}
+            onDelete={() => onTextDelete(text.id)}
+            onClick={handleTextClick(text.id)}
           />
         );
       })}

@@ -20,119 +20,145 @@ interface DraggableItem {
   };
 }
 
+interface BackgroundConfig {
+  size: { width: number; height: number };
+  keepAspectRatio: boolean;
+  aspectRatio: string;
+  customRatio: { width: number; height: number };
+  colorType: 'solid' | 'linear-gradient' | 'radial-gradient';
+  solidColor: string;
+  gradientColors: { color: string; position: number }[];
+  gradientAngle: number;
+}
+
+interface TextConfig {
+  id: number;
+  text: string;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  style: {
+    fontSize: number;
+    fontFamily: string;
+    rotate: number;
+    direction: 'horizontal' | 'vertical';
+  };
+}
+
 export default function Home() {
   const [items, setItems] = useState<DraggableItem[]>([]);
-  const [nextId, setNextId] = useState(1);
   const [selectedBookmark, setSelectedBookmark] = useState<DraggableItem>();
-  const [backgroundConfig, setBackgroundConfig] = useState<{
-    size: { width: number; height: number };
-    keepAspectRatio: boolean;
-    aspectRatio: string;
-    customRatio: { width: number; height: number };
-    colorType: 'solid' | 'linear-gradient' | 'radial-gradient';
-    solidColor: string;
-    gradientColors: { color: string; position: number }[];
-    gradientAngle: number;
-  }>({
-    size: { width: 600, height: 800 }, // 设置默认尺寸为 3:4 比例
+  const [selectedTextId, setSelectedTextId] = useState<number | null>(null);
+  const [backgroundConfig, setBackgroundConfig] = useState<BackgroundConfig>({
+    size: { width: 600, height: 800 },
     keepAspectRatio: true,
     aspectRatio: '3:4',
-    customRatio: { width: 3, height: 4 },
-    colorType: 'solid',
+    customRatio: { width: 16, height: 9 },
+    colorType: 'linear-gradient',
     solidColor: '#ffffff',
     gradientColors: [
-      { color: '#ffffff', position: 0 },
-      { color: '#e0e0e0', position: 100 }
+      { color: '#e0f2fe', position: 0 },
+      { color: '#ffffff', position: 100 }
     ],
     gradientAngle: 45
   });
 
-  const addNewItem = () => {
-    const newItem: DraggableItem = {
-      id: nextId,
-      content: '',
-      position: { 
-        x: (backgroundConfig.size.width - 200) / 2, 
-        y: (backgroundConfig.size.height - 150) / 2 
-      },
+  const [texts, setTexts] = useState<TextConfig[]>([]);
+
+  const handleAddBookmark = () => {
+    const newBookmark: DraggableItem = {
+      id: Date.now(),
+      content: '新书签',
+      position: { x: 100, y: 100 },
+      size: { width: 100, height: 100 },
       isEditing: false,
-      size: { width: 150, height: 450 },
-      shadow: {
-        angle: 46,
-        distance: 10,
-        blur: 17,
-        color: '#333333',
-        opacity: 0.47
+      selected: false
+    };
+    setItems(prevItems => [...prevItems, newBookmark]);
+  };
+
+  const handleBookmarkConfigChange = (config: Partial<DraggableItem>) => {
+    if (!selectedBookmark) return;
+
+    setItems(prevItems =>
+      prevItems.map(item =>
+        item.id === selectedBookmark.id
+          ? { ...item, ...config }
+          : item
+      )
+    );
+  };
+
+  const handleImageUpload = async (file: File) => {
+    if (!selectedBookmark) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      handleBookmarkConfigChange({
+        imageUrl: reader.result as string
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAddText = () => {
+    const newText: TextConfig = {
+      id: Date.now(),
+      text: '文本',
+      position: { x: 50, y: 50 },
+      size: { width: 300, height: 100 },
+      style: {
+        fontSize: 24,
+        fontFamily: 'inherit',
+        rotate: 0,
+        direction: 'horizontal'
       }
     };
-    setItems([...items, newItem]);
-    setNextId(nextId + 1);
+    setTexts(prev => [...prev, newText]);
+    setSelectedTextId(newText.id);
   };
 
-  const handleBookmarkConfigChange = (config: Partial<{
-    size: { width: number; height: number };
-    position: { x: number; y: number };
-    shadow?: {
-      angle: number;
-      distance: number;
-      blur: number;
-      color: string;
-      opacity: number;
-    };
-  }>) => {
-    if (selectedBookmark) {
-      const newItems = items.map(item =>
-        item.id === selectedBookmark.id
-          ? {
-              ...item,
-              ...(config.size && { size: config.size }),
-              ...(config.position && { position: config.position }),
-              ...(config.shadow && { shadow: config.shadow })
-            }
-          : item
-      );
+  const handleTextConfigChange = (id: number, config: Partial<TextConfig>) => {
+    setTexts(prev => prev.map(text =>
+      text.id === id ? { ...text, ...config } : text
+    ));
+  };
 
-      setItems(newItems);
-      setSelectedBookmark(newItems.find(item => item.id === selectedBookmark.id));
+  const handleDeleteText = (id: number) => {
+    setTexts(prev => prev.filter(text => text.id !== id));
+    if (selectedTextId === id) {
+      setSelectedTextId(null);
     }
   };
 
-  const handleImageUpload = (file: File) => {
-    if (selectedBookmark) {
-      const url = URL.createObjectURL(file);
-      const newItems = items.map(item =>
-        item.id === selectedBookmark.id
-          ? { ...item, imageUrl: url }
-          : item
-      );
-
-      setItems(newItems);
-      setSelectedBookmark(newItems.find(item => item.id === selectedBookmark.id));
-    }
-  };
-  
   return (
-    <main className="h-screen overflow-hidden flex">
-      {/* 背景板 */}
-      <div className="flex-1 p-4 overflow-auto">
-        <div className="min-h-[600px] flex items-center justify-center">
-          <Background 
-            items={items} 
-            setItems={setItems} 
-            onSelectBookmark={setSelectedBookmark}
-            backgroundConfig={backgroundConfig}
-          />
-        </div>
+    <main className="flex min-h-screen">
+      <div className="flex-1 p-8 overflow-auto">
+        <Background
+          items={items}
+          setItems={setItems}
+          onSelectBookmark={setSelectedBookmark}
+          backgroundConfig={backgroundConfig}
+          texts={texts}
+          onTextConfigChange={handleTextConfigChange}
+          onTextDelete={handleDeleteText}
+          onTextSelect={setSelectedTextId}
+          selectedTextId={selectedTextId}
+        />
       </div>
-      
-      {/* 操作面板 */}
-      <OperationPanel 
-        onAddBookmark={addNewItem} 
+      <OperationPanel
+        onAddBookmark={handleAddBookmark}
         selectedBookmark={selectedBookmark}
         onBookmarkConfigChange={handleBookmarkConfigChange}
         onImageUpload={handleImageUpload}
-        backgroundConfig={backgroundConfig}
         onBackgroundConfigChange={setBackgroundConfig}
+        onTextConfigChange={(config) => {
+          if (selectedTextId) {
+            handleTextConfigChange(selectedTextId, config);
+          }
+        }}
+        onAddText={handleAddText}
+        backgroundConfig={backgroundConfig}
+        selectedText={texts.find(t => t.id === selectedTextId)}
       />
     </main>
   );

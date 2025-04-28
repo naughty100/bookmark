@@ -4,6 +4,20 @@ import AddBookmarkButton from './AddBookmarkButton';
 import BookmarkOp from './Operation/bookmarkOp';
 import Settings from './Operation/settings';
 import BackgroundOp from './Operation/backgroundOp';
+import TextOp from './Operation/textOp';
+
+interface TextConfig {
+  id: number;
+  text: string;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  style: {
+    fontSize: number;
+    fontFamily: string;
+    rotate: number;
+    direction: 'horizontal' | 'vertical';
+  };
+}
 
 interface ShadowConfig {
   angle: number;
@@ -43,7 +57,10 @@ interface OperationPanelProps {
   onBookmarkConfigChange: (config: Partial<BookmarkConfig>) => void;
   onImageUpload: (file: File) => void;
   onBackgroundConfigChange: (config: BackgroundConfig) => void;
+  onTextConfigChange: (config: Partial<TextConfig>) => void;
+  onAddText: () => void;
   backgroundConfig: BackgroundConfig;
+  selectedText?: TextConfig;
 }
 
 export default function OperationPanel({ 
@@ -52,13 +69,17 @@ export default function OperationPanel({
   onBookmarkConfigChange,
   onImageUpload,
   onBackgroundConfigChange,
-  backgroundConfig
+  onTextConfigChange,
+  onAddText,
+  backgroundConfig,
+  selectedText
 }: OperationPanelProps) {
   const [activeTab, setActiveTab] = useState('bookmarks');
 
   const tabs = [
     { id: 'bookmarks', label: '书签' },
     { id: 'background', label: '背景' },
+    { id: 'text', label: '文本' },
     { id: 'settings', label: '设置' }
   ];
 
@@ -102,6 +123,29 @@ export default function OperationPanel({
               config={backgroundConfig}
               onConfigChange={onBackgroundConfigChange}
             />
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'text' && (
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 flex flex-col gap-4">
+            <button
+              onClick={onAddText}
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              新增文本
+            </button>
+            {selectedText ? (
+              <TextOp 
+                config={selectedText}
+                onConfigChange={onTextConfigChange}
+              />
+            ) : (
+              <p className="text-sm text-gray-500 text-center mt-4">
+                请选择或新增一个文本
+              </p>
+            )}
           </div>
         </div>
       )}

@@ -34,3 +34,32 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
+
+/* 字体定义 */
+@font-face {
+  font-family: 'ChillCalligraphy_ChenFeng';
+  src: url('/fonts/ChillCalligraphy_ChenFeng.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ChillCalligraphy_QiuHong';
+  src: url('/fonts/ChillCalligraphy_QiuHong.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ZhongQiZhiMang';
+  src: url('/fonts/钟齐志莽行书.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'HongLeiZhuoShu';
+  src: url('/fonts/鸿雷拙书简体.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
