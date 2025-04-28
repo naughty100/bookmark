@@ -41,6 +41,7 @@ interface TextConfig {
     fontFamily: string;
     rotate: number;
     direction: 'horizontal' | 'vertical';
+    color: string;
   };
 }
 
@@ -110,7 +111,8 @@ export default function Home() {
         fontSize: 25,
         fontFamily: 'ChillCalligraphy_ChenFeng',
         rotate: 0,
-        direction: 'vertical'
+        direction: 'vertical',
+        color: '#333333'
       }
     };
     setTexts(prev => [...prev, newText]);

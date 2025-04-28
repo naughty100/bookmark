@@ -42,6 +42,7 @@ interface TextConfig {
     rotate: number;
     direction: 'horizontal' | 'vertical';
     zIndex?: number;
+    color: string;
   };
 }
 

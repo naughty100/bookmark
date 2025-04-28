@@ -16,6 +16,7 @@ interface TextConfig {
     fontFamily: string;
     rotate: number;
     direction: 'horizontal' | 'vertical';
+    color: string;
   };
 }
 
