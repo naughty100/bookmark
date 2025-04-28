@@ -13,6 +13,7 @@ interface TextItemProps {
     rotate: number;
     direction: 'horizontal' | 'vertical';
     zIndex?: number;
+    color?: string;
   };
   selected?: boolean;
   nodeRef: React.RefObject<HTMLDivElement>;
@@ -44,6 +45,7 @@ export default function TextItem({
       height: style.direction === 'vertical' ? '100%' : 'fit-content',
       writingMode: style.direction === 'vertical' ? 'vertical-rl' : 'horizontal-tb' as any,
       textOrientation: style.direction === 'vertical' ? 'upright' : 'mixed' as any,
+      color: style.color || 'inherit',
     };
     return baseStyle;
   };

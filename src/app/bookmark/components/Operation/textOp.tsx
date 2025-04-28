@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import ColorPanel from '../ColorPanel';
 
 interface TextConfig {
   id: number;
@@ -11,6 +12,7 @@ interface TextConfig {
     fontFamily: string;
     rotate: number;
     direction: 'horizontal' | 'vertical';
+    color: string;  // 添加颜色属性
   };
 }
 
@@ -58,6 +60,15 @@ export default function TextOp({ config, onConfigChange }: TextOpProps) {
           value={config.text}
           onChange={(e) => onConfigChange({ text: e.target.value })}
           className="w-full px-3 py-2 text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* 文字颜色 */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">文字颜色</label>
+        <ColorPanel
+          selectedColor={config.style.color}
+          onColorSelect={(color) => handleStyleChange('color', color)}
         />
       </div>
 
