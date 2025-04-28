@@ -46,13 +46,16 @@ export default function BookmarkItem({
   onSelect,
 }: BookmarkItemProps) {
   const getShadowStyle = (shadow?: ShadowConfig) => {
+    console.log('shadow',shadow)
     if (!shadow) return {};
     const { angle, distance, blur, color, opacity } = shadow;
     const x = Math.cos(angle * Math.PI / 180) * distance;
     const y = Math.sin(angle * Math.PI / 180) * distance;
-    return {
+    const style = {
       boxShadow: `${x}px ${y}px ${blur}px ${color}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`
     };
+    console.log(111,style)
+    return style;
   };
 
   return (

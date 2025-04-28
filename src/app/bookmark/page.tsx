@@ -11,6 +11,13 @@ interface DraggableItem {
   size: { width: number; height: number };
   imageUrl?: string;
   selected?: boolean;
+  shadow?: {
+    angle: number;
+    distance: number;
+    blur: number;
+    color: string;
+    opacity: number;
+  };
 }
 
 export default function Home() {
@@ -24,19 +31,38 @@ export default function Home() {
       content: '',
       position: { x: Math.random() * 500, y: Math.random() * 300 },
       isEditing: false,
-      size: { width: 200, height: 600 } // 设置为 1:3 比例
+      size: { width: 200, height: 600 },
+      shadow: {
+        angle: 46,
+        distance: 10,
+        blur: 17,
+        color: '#333333',
+        opacity: 0.47
+      }
     };
     setItems([...items, newItem]);
     setNextId(nextId + 1);
   };
 
-  const handleBookmarkConfigChange = (config: Partial<{ size: { width: number; height: number } }>) => {
+  const handleBookmarkConfigChange = (config: Partial<{
+    size: { width: number; height: number };
+    shadow?: {
+      angle: number;
+      distance: number;
+      blur: number;
+      color: string;
+      opacity: number;
+    };
+  }>) => {
     if (selectedBookmark) {
       setItems(items.map(item =>
         item.id === selectedBookmark.id
           ? { ...item, ...config }
           : item
       ));
+
+      // 更新选中的书签状态，以确保 UI 即时更新
+      setSelectedBookmark(prev => prev ? { ...prev, ...config } : prev);
     }
   };
 

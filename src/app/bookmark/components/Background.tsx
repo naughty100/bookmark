@@ -10,6 +10,13 @@ interface DraggableItem {
   size: { width: number; height: number };
   imageUrl?: string;
   selected?: boolean;
+  shadow?: {
+    angle: number;
+    distance: number;
+    blur: number;
+    color: string;
+    opacity: number;
+  };
 }
 
 interface BackgroundProps {
@@ -83,6 +90,7 @@ export default function Background({ items, setItems, onSelectBookmark }: Backgr
             isEditing={item.isEditing}
             selected={item.selected}
             imageUrl={item.imageUrl}
+            shadow={item.shadow}
             nodeRef={nodeRefs.current[item.id] || (nodeRefs.current[item.id] = React.createRef())}
             onDrag={handleDrag}
             onDelete={deleteItem}
