@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import AddBookmarkButton from './AddBookmarkButton';
 import BookmarkOp from './Operation/bookmarkOp';
 import Settings from './Operation/settings';
+import BackgroundOp from './Operation/backgroundOp';
 
 interface ShadowConfig {
   angle: number;
@@ -18,6 +19,17 @@ interface BookmarkConfig {
   shadow?: ShadowConfig;
 }
 
+interface BackgroundConfig {
+  size: { width: number; height: number };
+  keepAspectRatio: boolean;
+  aspectRatio: string;
+  customRatio: { width: number; height: number };
+  colorType: 'solid' | 'linear-gradient' | 'radial-gradient';
+  solidColor: string;
+  gradientColors: { color: string; position: number }[];
+  gradientAngle: number;
+}
+
 interface OperationPanelProps {
   onAddBookmark: () => void;
   selectedBookmark?: {
@@ -30,32 +42,39 @@ interface OperationPanelProps {
   };
   onBookmarkConfigChange: (config: Partial<BookmarkConfig>) => void;
   onImageUpload: (file: File) => void;
+  onBackgroundConfigChange: (config: BackgroundConfig) => void;
+  backgroundConfig: BackgroundConfig;
 }
 
 export default function OperationPanel({ 
   onAddBookmark, 
   selectedBookmark,
   onBookmarkConfigChange,
-  onImageUpload 
+  onImageUpload,
+  onBackgroundConfigChange,
+  backgroundConfig
 }: OperationPanelProps) {
   const [activeTab, setActiveTab] = useState('bookmarks');
 
+  const tabs = [
+    { id: 'bookmarks', label: '书签' },
+    { id: 'background', label: '背景' },
+    { id: 'settings', label: '设置' }
+  ];
+
   return (
-    <div className="w-80 bg-gray-50 p-4 border-l border-gray-200 flex flex-col h-screen">
-      {/* Tabs */}
-      <div className="flex mb-4 border-b border-gray-200">
-        {[
-          { id: 'bookmarks', label: '书签' },
-          { id: 'settings', label: '设置' }
-        ].map(tab => (
+    <div className="w-80 h-screen bg-white border-l border-gray-200 flex flex-col">
+      {/* Tab Navigation */}
+      <div className="flex border-b border-gray-200">
+        {tabs.map(tab => (
           <button
             key={tab.id}
-            className={`px-4 py-2 -mb-px ${
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 px-4 py-3 text-sm font-medium ${
               activeTab === tab.id
-                ? 'text-blue-600 border-b-2 border-blue-600 font-medium'
+                ? 'text-blue-600 border-b-2 border-blue-600'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
-            onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
           </button>
@@ -64,27 +83,34 @@ export default function OperationPanel({
 
       {/* Tab Content */}
       {activeTab === 'bookmarks' && (
-        <div className="flex flex-col gap-4 overflow-y-auto">
+        <div className="p-4 flex flex-col gap-4 flex-1 overflow-y-auto">
           <AddBookmarkButton onClick={onAddBookmark} />
-          
-          {selectedBookmark ? (
-            <div className="mt-4 space-y-4">
-              <h3 className="font-medium text-gray-900">书签配置</h3>
-              <BookmarkOp 
-                selectedBookmark={selectedBookmark}
-                onBookmarkConfigChange={onBookmarkConfigChange}
-                onImageUpload={onImageUpload}
-              />
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500 mt-4">选择一个书签来配置</p>
+          {selectedBookmark && (
+            <BookmarkOp 
+              selectedBookmark={selectedBookmark}
+              onBookmarkConfigChange={onBookmarkConfigChange}
+              onImageUpload={onImageUpload}
+            />
           )}
         </div>
       )}
 
+      {activeTab === 'background' && (
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4">
+            <BackgroundOp 
+              config={backgroundConfig}
+              onConfigChange={onBackgroundConfigChange}
+            />
+          </div>
+        </div>
+      )}
+
       {activeTab === 'settings' && (
-        <div className="p-4">
-          <Settings />
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4">
+            <Settings />
+          </div>
         </div>
       )}
     </div>

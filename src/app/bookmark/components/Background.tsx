@@ -19,13 +19,30 @@ interface DraggableItem {
   };
 }
 
+interface BackgroundConfig {
+  size: { width: number; height: number };
+  keepAspectRatio: boolean;
+  aspectRatio: string;
+  customRatio: { width: number; height: number };
+  colorType: 'solid' | 'linear-gradient' | 'radial-gradient';
+  solidColor: string;
+  gradientColors: { color: string; position: number }[];
+  gradientAngle: number;
+}
+
 interface BackgroundProps {
   items: DraggableItem[];
   setItems: React.Dispatch<React.SetStateAction<DraggableItem[]>>;
   onSelectBookmark: (bookmark: DraggableItem | undefined) => void;
+  backgroundConfig?: BackgroundConfig;
 }
 
-export default function Background({ items, setItems, onSelectBookmark }: BackgroundProps) {
+export default function Background({ 
+  items, 
+  setItems, 
+  onSelectBookmark,
+  backgroundConfig 
+}: BackgroundProps) {
   const nodeRefs = useRef<{ [key: number]: RefObject<HTMLDivElement> }>({});
 
   const handleDrag = (id: number, e: any, data: any) => {
@@ -58,7 +75,8 @@ export default function Background({ items, setItems, onSelectBookmark }: Backgr
     ));
   };
 
-  const handleSelect = (id: number) => {
+  const handleSelect = (id: number) => (e: React.MouseEvent) => {
+    e.stopPropagation();
     const newItems = items.map(item => ({
       ...item,
       selected: item.id === id
@@ -74,13 +92,47 @@ export default function Background({ items, setItems, onSelectBookmark }: Backgr
     ));
   };
 
+  const getBackgroundStyle = () => {
+    if (!backgroundConfig) {
+      return 'bg-gradient-to-br from-blue-50 to-white';
+    }
+
+    const { colorType, solidColor, gradientColors, gradientAngle } = backgroundConfig;
+    
+    if (colorType === 'solid') {
+      return solidColor;
+    }
+
+    const sortedColors = [...gradientColors].sort((a, b) => a.position - b.position);
+    const colorStops = sortedColors.map(gc => `${gc.color} ${gc.position}%`).join(', ');
+    
+    if (colorType === 'linear-gradient') {
+      return `linear-gradient(${gradientAngle}deg, ${colorStops})`;
+    } else if (colorType === 'radial-gradient') {
+      return `radial-gradient(circle at center, ${colorStops})`;
+    }
+
+    return 'bg-gradient-to-br from-blue-50 to-white';
+  };
+
   return (
-    <div className="flex-1">
-      <div 
-        className="relative w-full h-[calc(100vh-2.5rem)] bg-gradient-to-br from-blue-50 to-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden"
-        onClick={() => onSelectBookmark(undefined)}
-      >
-        {items.map((item) => (
+    <div 
+      className="relative bg-white shadow-lg overflow-hidden"
+      style={{
+        width: backgroundConfig?.size.width || '100%',
+        height: backgroundConfig?.size.height || '100%',
+        background: getBackgroundStyle(),
+        minWidth: '300px',
+        minHeight: '200px',
+        margin: '0 auto'
+      }}
+    >
+      {items.map((item) => {
+        if (!nodeRefs.current[item.id]) {
+          nodeRefs.current[item.id] = React.createRef();
+        }
+
+        return (
           <BookmarkItem
             key={item.id}
             id={item.id}
@@ -91,19 +143,16 @@ export default function Background({ items, setItems, onSelectBookmark }: Backgr
             selected={item.selected}
             imageUrl={item.imageUrl}
             shadow={item.shadow}
-            nodeRef={nodeRefs.current[item.id] || (nodeRefs.current[item.id] = React.createRef())}
+            nodeRef={nodeRefs.current[item.id]}
             onDrag={handleDrag}
             onDelete={deleteItem}
             onEdit={startEditing}
             onContentChange={handleContentChange}
-            onSelect={(e) => {
-              e.stopPropagation();
-              handleSelect(item.id);
-            }}
+            onSelect={handleSelect(item.id)}
             onResize={handleResize}
           />
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }

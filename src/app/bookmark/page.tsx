@@ -24,14 +24,39 @@ export default function Home() {
   const [items, setItems] = useState<DraggableItem[]>([]);
   const [nextId, setNextId] = useState(1);
   const [selectedBookmark, setSelectedBookmark] = useState<DraggableItem>();
+  const [backgroundConfig, setBackgroundConfig] = useState<{
+    size: { width: number; height: number };
+    keepAspectRatio: boolean;
+    aspectRatio: string;
+    customRatio: { width: number; height: number };
+    colorType: 'solid' | 'linear-gradient' | 'radial-gradient';
+    solidColor: string;
+    gradientColors: { color: string; position: number }[];
+    gradientAngle: number;
+  }>({
+    size: { width: 600, height: 800 }, // 设置默认尺寸为 3:4 比例
+    keepAspectRatio: true,
+    aspectRatio: '3:4',
+    customRatio: { width: 3, height: 4 },
+    colorType: 'solid',
+    solidColor: '#ffffff',
+    gradientColors: [
+      { color: '#ffffff', position: 0 },
+      { color: '#e0e0e0', position: 100 }
+    ],
+    gradientAngle: 45
+  });
 
   const addNewItem = () => {
     const newItem: DraggableItem = {
       id: nextId,
       content: '',
-      position: { x: Math.random() * 500, y: Math.random() * 300 },
+      position: { 
+        x: (backgroundConfig.size.width - 200) / 2, 
+        y: (backgroundConfig.size.height - 150) / 2 
+      },
       isEditing: false,
-      size: { width: 200, height: 600 },
+      size: { width: 150, height: 450 },
       shadow: {
         angle: 46,
         distance: 10,
@@ -87,23 +112,27 @@ export default function Home() {
   };
   
   return (
-    <main className="min-h-screen flex">
+    <main className="h-screen overflow-hidden flex">
       {/* 背景板 */}
-      <Background 
-        items={items} 
-        setItems={setItems} 
-        onSelectBookmark={setSelectedBookmark}
-      />
+      <div className="flex-1 p-4 overflow-auto">
+        <div className="min-h-[600px] flex items-center justify-center">
+          <Background 
+            items={items} 
+            setItems={setItems} 
+            onSelectBookmark={setSelectedBookmark}
+            backgroundConfig={backgroundConfig}
+          />
+        </div>
+      </div>
       
-      {/* 颜色面板 */}
-      {/* todo */}
-
       {/* 操作面板 */}
       <OperationPanel 
         onAddBookmark={addNewItem} 
         selectedBookmark={selectedBookmark}
         onBookmarkConfigChange={handleBookmarkConfigChange}
         onImageUpload={handleImageUpload}
+        backgroundConfig={backgroundConfig}
+        onBackgroundConfigChange={setBackgroundConfig}
       />
     </main>
   );
