@@ -41,6 +41,7 @@ interface TextConfig {
     fontFamily: string;
     rotate: number;
     direction: 'horizontal' | 'vertical';
+    zIndex?: number;
   };
 }
 
@@ -143,7 +144,6 @@ export default function Background({
 
   const handleTextDrag = (id: number, e: any, data: any) => {
     if (!containerRef.current) return;
-
     onTextConfigChange(id, {
       position: {
         x: data.x,
@@ -159,6 +159,21 @@ export default function Background({
 
   const handleBackgroundClick = () => {
     onTextSelect(null);
+  };
+
+  const handleTextZIndexChange = (id: number, type: 'up' | 'down') => {
+    const currentText = texts.find(t => t.id === id);
+    if (!currentText) return;
+
+    const currentZIndex = currentText.style.zIndex || 0;
+    const newZIndex = type === 'up' ? currentZIndex + 1 : Math.max(0, currentZIndex - 1);
+
+    onTextConfigChange(id, {
+      style: {
+        ...currentText.style,
+        zIndex: newZIndex
+      }
+    });
   };
 
   return (
@@ -216,9 +231,10 @@ export default function Background({
             style={text.style}
             selected={selectedTextId === text.id}
             nodeRef={textRefs.current[text.id]}
-            onDrag={handleTextDrag}
+            onDrag={(e, data) => handleTextDrag(text.id, e, data)}
             onDelete={() => onTextDelete(text.id)}
             onClick={handleTextClick(text.id)}
+            onZIndexChange={(type) => handleTextZIndexChange(text.id, type)}
           />
         );
       })}

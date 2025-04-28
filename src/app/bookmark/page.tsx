@@ -104,13 +104,13 @@ export default function Home() {
     const newText: TextConfig = {
       id: Date.now(),
       text: '新文本',
-      position: { x: 400, y: 300 },
-      size: { width: 300, height: 100 },
+      position: { x: 100, y: 100 },
+      size: { width: 50, height: 180 },
       style: {
-        fontSize: 24,
-        fontFamily: 'inherit',
+        fontSize: 25,
+        fontFamily: 'ChillCalligraphy_ChenFeng',
         rotate: 0,
-        direction: 'horizontal'
+        direction: 'vertical'
       }
     };
     setTexts(prev => [...prev, newText]);
