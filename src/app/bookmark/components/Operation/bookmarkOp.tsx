@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import ImageCropModal from '../ImageCropModal';
+import ColorPanel from '../ColorPanel';
 
 interface ShadowConfig {
   angle: number;
@@ -45,10 +46,10 @@ export default function BookmarkOp({
 }: BookmarkOpProps) {
   const [shadow, setShadow] = useState<ShadowConfig>({
     angle: 46,
-    distance: 10,
-    blur: 17,
+    distance: 14,
+    blur: 13,
     color: '#333333',
-    opacity: 0.46
+    opacity: 0.66
   });
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -427,6 +428,17 @@ export default function BookmarkOp({
       {/* Shadow Controls */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">阴影</label>
+        <div>
+          <div className="flex items-center justify-between">
+            <label className="block text-xs text-gray-500">颜色</label>
+          </div>
+          <div>
+            <ColorPanel 
+              selectedColor={shadow.color}
+              onColorSelect={(color) => handleShadowChange('color', color)}
+            />
+          </div>
+        </div>
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between">
@@ -490,17 +502,6 @@ export default function BookmarkOp({
               onChange={(e) => handleShadowChange('blur', parseInt(e.target.value))}
               className="mt-1 w-full"
             />
-          </div>
-          <div>
-            <div className="flex items-center justify-between">
-              <label className="block text-xs text-gray-500">颜色</label>
-              <input
-                type="color"
-                value={shadow.color}
-                onChange={(e) => handleShadowChange('color', e.target.value)}
-                className="w-8 h-8 p-0 border-0"
-              />
-            </div>
           </div>
           <div>
             <div className="flex items-center justify-between">
