@@ -67,9 +67,9 @@ export default function Home() {
   const handleAddBookmark = () => {
     const newBookmark: DraggableItem = {
       id: Date.now(),
-      content: '新书签',
-      position: { x: 100, y: 100 },
-      size: { width: 100, height: 100 },
+      content: '',
+      position: { x: 150, y: 150 },
+      size: { width: 150, height: 450 },
       isEditing: false,
       selected: false
     };
@@ -103,8 +103,8 @@ export default function Home() {
   const handleAddText = () => {
     const newText: TextConfig = {
       id: Date.now(),
-      text: '文本',
-      position: { x: 50, y: 50 },
+      text: '新文本',
+      position: { x: 400, y: 300 },
       size: { width: 300, height: 100 },
       style: {
         fontSize: 24,

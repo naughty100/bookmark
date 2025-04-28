@@ -144,12 +144,11 @@ export default function Background({
   const handleTextDrag = (id: number, e: any, data: any) => {
     if (!containerRef.current) return;
 
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const x = (data.x / containerRect.width) * 100;
-    const y = (data.y / containerRect.height) * 100;
-
     onTextConfigChange(id, {
-      position: { x, y }
+      position: {
+        x: data.x,
+        y: data.y
+      }
     });
   };
 
