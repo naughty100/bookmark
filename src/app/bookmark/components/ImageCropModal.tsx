@@ -18,8 +18,8 @@ export default function ImageCropModal({
 }: ImageCropModalProps) {
   const [crop, setCrop] = useState<Crop>({
     unit: '%',
-    width: 100,
-    height: aspectRatio ? 100 / aspectRatio : 100,
+    width: 50,
+    height: aspectRatio ? 50 / aspectRatio : 50,
     x: 0,
     y: 0,
   });
@@ -29,8 +29,8 @@ export default function ImageCropModal({
     setImageRef(img);
     // 根据图片比例初始化裁剪区域
     const imgAspect = img.width / img.height;
-    let cropWidth = 100;
-    let cropHeight = aspectRatio ? 100 / aspectRatio : 100;
+    let cropWidth = 50;
+    let cropHeight = aspectRatio ? 50 / aspectRatio : 50;
     
     if (aspectRatio) {
       if (imgAspect > aspectRatio) {
