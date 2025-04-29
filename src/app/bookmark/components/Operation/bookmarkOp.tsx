@@ -3,20 +3,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import ImageCropModal from '../ImageCropModal';
 import ColorPanel from '../ColorPanel';
-
-interface ShadowConfig {
-  angle: number;
-  distance: number;
-  blur: number;
-  color: string;
-  opacity: number;
-}
-
-interface BookmarkConfig {
-  size?: { width: number; height: number };
-  position?: { x: number; y: number };
-  shadow?: ShadowConfig;
-}
+import { ShadowConfig, BookmarkConfig } from '@/types/bookmark/index.d';
 
 interface BookmarkOpProps {
   selectedBookmark?: {

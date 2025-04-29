@@ -2,32 +2,7 @@
 import React, { RefObject } from 'react';
 import Draggable from 'react-draggable';
 import Image from 'next/image';
-
-interface ShadowConfig {
-  angle: number;
-  distance: number;
-  blur: number;
-  color: string;
-  opacity: number;
-}
-
-interface BookmarkItemProps {
-  id: number;
-  content: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  isEditing: boolean;
-  selected?: boolean;
-  imageUrl?: string;
-  shadow?: ShadowConfig;
-  nodeRef: RefObject<HTMLDivElement>;
-  onDrag: (id: number, e: any, data: any) => void;
-  onDelete: (id: number) => void;
-  onEdit: (id: number) => void;
-  onContentChange: (id: number, newContent: string) => void;
-  onSelect: (e: React.MouseEvent) => void;
-  onResize?: (id: number, size: { width: number; height: number }) => void;
-}
+import { BookmarkItemProps, ShadowConfig } from '@/types/bookmark/index.d';
 
 export default function BookmarkItem({
   id,

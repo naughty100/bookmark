@@ -2,13 +2,7 @@
 import React, { useState, useCallback } from 'react';
 import ReactCrop, { Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-
-interface ImageCropModalProps {
-  imageUrl: string;
-  aspectRatio?: number;
-  onCancel: () => void;
-  onCrop: (croppedImage: string) => void;
-}
+import { ImageCropModalProps } from '@/types/bookmark/index.d';
 
 export default function ImageCropModal({
   imageUrl,

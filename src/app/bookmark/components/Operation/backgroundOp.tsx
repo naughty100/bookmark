@@ -1,17 +1,7 @@
 'use client';
 import React from 'react';
 import ColorPanel from '../ColorPanel';
-
-interface BackgroundConfig {
-  size: { width: number; height: number };
-  keepAspectRatio: boolean;
-  aspectRatio: string;
-  customRatio: { width: number; height: number };
-  colorType: 'solid' | 'linear-gradient' | 'radial-gradient';
-  solidColor: string;
-  gradientColors: { color: string; position: number }[];
-  gradientAngle: number;
-}
+import { BackgroundConfig } from '@/types/bookmark/index.d';
 
 interface BackgroundOpProps {
   config: BackgroundConfig;

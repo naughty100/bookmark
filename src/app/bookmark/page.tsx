@@ -2,48 +2,8 @@
 import { useState } from 'react';
 import Background from './components/Background';
 import OperationPanel from './components/OperationPanel';
+import { DraggableItem , BackgroundConfig , TextConfig } from '@/types/bookmark/index.d';
 
-interface DraggableItem {
-  id: number;
-  content: string;
-  position: { x: number; y: number };
-  isEditing: boolean;
-  size: { width: number; height: number };
-  imageUrl?: string;
-  selected?: boolean;
-  shadow?: {
-    angle: number;
-    distance: number;
-    blur: number;
-    color: string;
-    opacity: number;
-  };
-}
-
-interface BackgroundConfig {
-  size: { width: number; height: number };
-  keepAspectRatio: boolean;
-  aspectRatio: string;
-  customRatio: { width: number; height: number };
-  colorType: 'solid' | 'linear-gradient' | 'radial-gradient';
-  solidColor: string;
-  gradientColors: { color: string; position: number }[];
-  gradientAngle: number;
-}
-
-interface TextConfig {
-  id: number;
-  text: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  style: {
-    fontSize: number;
-    fontFamily: string;
-    rotate: number;
-    direction: 'horizontal' | 'vertical';
-    color: string;
-  };
-}
 
 export default function Home() {
   const [items, setItems] = useState<DraggableItem[]>([]);

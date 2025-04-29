@@ -2,61 +2,7 @@
 import React, { useRef } from 'react';
 import BookmarkItem from './BookmarkItem';
 import TextItem from './TextItem';
-
-interface DraggableItem {
-  id: number;
-  content: string;
-  position: { x: number; y: number };
-  isEditing: boolean;
-  size: { width: number; height: number };
-  imageUrl?: string;
-  selected?: boolean;
-  shadow?: {
-    angle: number;
-    distance: number;
-    blur: number;
-    color: string;
-    opacity: number;
-  };
-}
-
-interface BackgroundConfig {
-  size: { width: number; height: number };
-  keepAspectRatio: boolean;
-  aspectRatio: string;
-  customRatio: { width: number; height: number };
-  colorType: 'solid' | 'linear-gradient' | 'radial-gradient';
-  solidColor: string;
-  gradientColors: { color: string; position: number }[];
-  gradientAngle: number;
-}
-
-interface TextConfig {
-  id: number;
-  text: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  style: {
-    fontSize: number;
-    fontFamily: string;
-    rotate: number;
-    direction: 'horizontal' | 'vertical';
-    zIndex?: number;
-    color: string;
-  };
-}
-
-interface BackgroundProps {
-  items: DraggableItem[];
-  setItems: React.Dispatch<React.SetStateAction<DraggableItem[]>>;
-  onSelectBookmark: (bookmark: DraggableItem | undefined) => void;
-  backgroundConfig?: BackgroundConfig;
-  texts: TextConfig[];
-  onTextConfigChange: (id: number, config: Partial<TextConfig>) => void;
-  onTextDelete: (id: number) => void;
-  onTextSelect: (id: number | null) => void;
-  selectedTextId: number | null;
-}
+import { BackgroundProps } from '@/types/bookmark/index.d';
 
 export default function Background({
   items,

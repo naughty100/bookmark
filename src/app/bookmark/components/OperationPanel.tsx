@@ -5,64 +5,7 @@ import BookmarkOp from './Operation/bookmarkOp';
 import Settings from './Operation/settings';
 import BackgroundOp from './Operation/backgroundOp';
 import TextOp from './Operation/textOp';
-
-interface TextConfig {
-  id: number;
-  text: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  style: {
-    fontSize: number;
-    fontFamily: string;
-    rotate: number;
-    direction: 'horizontal' | 'vertical';
-    color: string;
-  };
-}
-
-interface ShadowConfig {
-  angle: number;
-  distance: number;
-  blur: number;
-  color: string;
-  opacity: number;
-}
-
-interface BookmarkConfig {
-  size: { width: number; height: number };
-  position?: { x: number; y: number };
-  shadow?: ShadowConfig;
-}
-
-interface BackgroundConfig {
-  size: { width: number; height: number };
-  keepAspectRatio: boolean;
-  aspectRatio: string;
-  customRatio: { width: number; height: number };
-  colorType: 'solid' | 'linear-gradient' | 'radial-gradient';
-  solidColor: string;
-  gradientColors: { color: string; position: number }[];
-  gradientAngle: number;
-}
-
-interface OperationPanelProps {
-  onAddBookmark: () => void;
-  selectedBookmark?: {
-    id: number;
-    content: string;
-    size: { width: number; height: number };
-    position: { x: number; y: number };
-    imageUrl?: string;
-    shadow?: ShadowConfig;
-  };
-  onBookmarkConfigChange: (config: Partial<BookmarkConfig>) => void;
-  onImageUpload: (file: File) => void;
-  onBackgroundConfigChange: (config: BackgroundConfig) => void;
-  onTextConfigChange: (config: Partial<TextConfig>) => void;
-  onAddText: () => void;
-  backgroundConfig: BackgroundConfig;
-  selectedText?: TextConfig;
-}
+import { OperationPanelProps } from '@/types/bookmark/index.d';
 
 export default function OperationPanel({ 
   onAddBookmark, 

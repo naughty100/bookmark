@@ -1,20 +1,7 @@
 'use client';
 import React from 'react';
 import ColorPanel from '../ColorPanel';
-
-interface TextConfig {
-  id: number;
-  text: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  style: {
-    fontSize: number;
-    fontFamily: string;
-    rotate: number;
-    direction: 'horizontal' | 'vertical';
-    color: string;  // 添加颜色属性
-  };
-}
+import { TextConfig } from '@/types/bookmark/index.d';
 
 interface TextOpProps {
   config: TextConfig;

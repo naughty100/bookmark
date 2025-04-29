@@ -1,27 +1,7 @@
 'use client';
 import React from 'react';
 import Draggable from 'react-draggable';
-
-interface TextItemProps {
-  id: number;
-  text: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  style: {
-    fontSize: number;
-    fontFamily: string;
-    rotate: number;
-    direction: 'horizontal' | 'vertical';
-    zIndex?: number;
-    color?: string;
-  };
-  selected?: boolean;
-  nodeRef: React.RefObject<HTMLDivElement>;
-  onDelete: () => void;
-  onClick: (e: React.MouseEvent) => void;
-  onDrag?: (e: any, data: any) => void;
-  onZIndexChange?: (type: 'up' | 'down') => void;
-}
+import { TextItemProps } from '@/types/bookmark/index.d';
 
 export default function TextItem({
   id,

@@ -1,9 +1,6 @@
 'use client';
 import React from 'react';
-
-interface AddBookmarkButtonProps {
-  onClick: () => void;
-}
+import { AddBookmarkButtonProps } from '@/types/bookmark/index.d';
 
 export default function AddBookmarkButton({ onClick }: AddBookmarkButtonProps) {
   return (

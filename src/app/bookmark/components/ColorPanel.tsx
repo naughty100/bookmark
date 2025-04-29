@@ -1,10 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-
-interface ColorPanelProps {
-  onColorSelect: (color: string) => void;
-  selectedColor?: string;
-}
+import { ColorPanelProps } from '@/types/bookmark/index.d';
 
 // 预设的颜色列表
 const presetColors = [
