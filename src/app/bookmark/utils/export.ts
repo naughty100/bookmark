@@ -13,7 +13,7 @@ export const exportToImage = async ({ backgroundConfig, items, texts }: ExportCo
   if (!ctx) throw new Error('无法创建 canvas 上下文');
 
   // 设置 canvas 尺寸为背景尺寸的 2 倍以获得高清效果
-  const scale = 2;
+  const scale = 3;
   canvas.width = backgroundConfig.size.width * scale;
   canvas.height = backgroundConfig.size.height * scale;
 
@@ -25,19 +25,38 @@ export const exportToImage = async ({ backgroundConfig, items, texts }: ExportCo
     if (backgroundConfig.colorType === 'solid') {
       ctx.fillStyle = backgroundConfig.solidColor;
       ctx.fillRect(0, 0, backgroundConfig.size.width, backgroundConfig.size.height);
-    } else {
-      const gradient = backgroundConfig.colorType === 'linear-gradient'
-        ? ctx.createLinearGradient(0, 0, 
-            Math.cos(backgroundConfig.gradientAngle * Math.PI / 180) * backgroundConfig.size.width,
-            Math.sin(backgroundConfig.gradientAngle * Math.PI / 180) * backgroundConfig.size.height)
-        : ctx.createRadialGradient(
-            backgroundConfig.size.width / 2,
-            backgroundConfig.size.height / 2,
-            0,
-            backgroundConfig.size.width / 2,
-            backgroundConfig.size.height / 2,
-            Math.max(backgroundConfig.size.width, backgroundConfig.size.height) / 2
-          );
+    } else if (backgroundConfig.colorType === 'linear-gradient') {
+      // 修复线性渐变计算
+      const angleInRadians = (( backgroundConfig.gradientAngle + 270) % 360 ) * Math.PI / 180;
+      const width = backgroundConfig.size.width;
+      const height = backgroundConfig.size.height;
+      
+      // 计算渐变的起点和终点
+      const x0 = width / 2 - Math.cos(angleInRadians) * width / 2;
+      const y0 = height / 2 - Math.sin(angleInRadians) * height / 2;
+      const x1 = width / 2 + Math.cos(angleInRadians) * width / 2;
+      const y1 = height / 2 + Math.sin(angleInRadians) * height / 2;
+      
+      const gradient = ctx.createLinearGradient(x0, y0, x1, y1);
+      
+      backgroundConfig.gradientColors
+        .sort((a, b) => a.position - b.position)
+        .forEach(({ color, position }) => {
+          gradient.addColorStop(position / 100, color);
+        });
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, backgroundConfig.size.width, backgroundConfig.size.height);
+    } else if (backgroundConfig.colorType === 'radial-gradient') {
+      // 径向渐变
+      const centerX = backgroundConfig.size.width / 2;
+      const centerY = backgroundConfig.size.height / 2;
+      const radius = Math.max(backgroundConfig.size.width, backgroundConfig.size.height) / 2;
+      
+      const gradient = ctx.createRadialGradient(
+        centerX, centerY, 0,
+        centerX, centerY, radius
+      );
 
       backgroundConfig.gradientColors
         .sort((a, b) => a.position - b.position)
