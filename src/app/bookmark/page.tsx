@@ -4,7 +4,6 @@ import Background from './components/Background';
 import OperationPanel from './components/OperationPanel';
 import { DraggableItem , BackgroundConfig , TextConfig } from '@/types/bookmark/index.d';
 
-
 export default function Home() {
   const [items, setItems] = useState<DraggableItem[]>([]);
   const [selectedBookmark, setSelectedBookmark] = useState<DraggableItem>();
@@ -121,6 +120,8 @@ export default function Home() {
         onAddText={handleAddText}
         backgroundConfig={backgroundConfig}
         selectedText={texts.find(t => t.id === selectedTextId)}
+        items={items}
+        texts={texts}
       />
     </main>
   );

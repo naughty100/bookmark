@@ -102,6 +102,9 @@ export interface DraggableItem {
     onAddText: () => void;
     backgroundConfig: BackgroundConfig;
     selectedText?: TextConfig;
+    items: DraggableItem[];
+    texts: TextConfig[];
+    onExport?: () => void;
   }
 
   // 图片裁剪面板属性配置类型
