@@ -3,6 +3,7 @@ import React, { useState, useCallback } from 'react';
 import ReactCrop, { Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { ImageCropModalProps } from '@/types/bookmark/index.d';
+import Image from 'next/image';
 
 export default function ImageCropModal({
   imageUrl,
@@ -25,7 +26,7 @@ export default function ImageCropModal({
     const imgAspect = img.width / img.height;
     let cropWidth = 50;
     let cropHeight = aspectRatio ? 50 / aspectRatio : 50;
-    
+
     if (aspectRatio) {
       if (imgAspect > aspectRatio) {
         cropWidth = cropHeight * aspectRatio;
@@ -96,11 +97,18 @@ export default function ImageCropModal({
             aspect={aspectRatio}
             className="max-w-full"
           >
-            <img
+            {/* 注意: ReactCrop库可能需要使用原生img标签才能正常工作,
+                如果使用Next.js的Image组件导致裁剪功能不正常，
+                可以添加 {/* eslint-disable-next-line @next/next/no-img-element */}
+            <Image
               src={imageUrl}
               alt="裁剪预览"
-              onLoad={(e) => onImageLoad(e.currentTarget)}
+              onLoad={(e) => onImageLoad(e.currentTarget as HTMLImageElement)}
               className="max-w-full"
+              width={500}
+              height={500}
+              style={{ objectFit: "contain", width: "100%", height: "auto" }}
+              unoptimized={true}
             />
           </ReactCrop>
         </div>

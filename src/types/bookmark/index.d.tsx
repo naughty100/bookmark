@@ -1,4 +1,5 @@
 import React, { RefObject } from 'react';
+import { DraggableData, DraggableEvent } from 'react-draggable';
 
 // 可拖拽的元素类型
 export interface DraggableItem {
@@ -64,7 +65,7 @@ export interface DraggableItem {
     nodeRef: React.RefObject<HTMLDivElement>;
     onDelete: () => void;
     onClick: (e: React.MouseEvent) => void;
-    onDrag?: (e: any, data: any) => void;
+    onDrag?: (e: DraggableEvent, data: DraggableData) => void;
     onZIndexChange?: (type: 'up' | 'down') => void;
   }
 
@@ -131,7 +132,7 @@ export interface DraggableItem {
     imageUrl?: string;
     shadow?: ShadowConfig;
     nodeRef: RefObject<HTMLDivElement>;
-    onDrag: (id: number, e: any, data: any) => void;
+    onDrag: (id: number, e: DraggableEvent, data: DraggableData) => void;
     onDelete: (id: number) => void;
     onEdit: (id: number) => void;
     onContentChange: (id: number, newContent: string) => void;

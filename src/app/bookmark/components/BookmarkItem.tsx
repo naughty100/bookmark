@@ -1,6 +1,6 @@
 'use client';
-import React, { RefObject } from 'react';
-import Draggable from 'react-draggable';
+import React from 'react';
+import Draggable, { DraggableEvent, DraggableData } from 'react-draggable';
 import Image from 'next/image';
 import { BookmarkItemProps, ShadowConfig } from '@/types/bookmark/index.d';
 
@@ -10,7 +10,6 @@ export default function BookmarkItem({
   position,
   size,
   isEditing,
-  selected,
   imageUrl,
   shadow,
   nodeRef,

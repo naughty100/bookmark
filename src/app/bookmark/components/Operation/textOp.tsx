@@ -17,7 +17,7 @@ const fonts = [
 ];
 
 export default function TextOp({ config, onConfigChange }: TextOpProps) {
-  const handleStyleChange = (key: keyof TextConfig['style'], value: any) => {
+  const handleStyleChange = (key: keyof TextConfig['style'], value: string | number | boolean) => {
     onConfigChange({
       style: {
         ...config.style,

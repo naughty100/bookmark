@@ -3,6 +3,7 @@ import React, { useRef } from 'react';
 import BookmarkItem from './BookmarkItem';
 import TextItem from './TextItem';
 import { BackgroundProps } from '@/types/bookmark/index.d';
+import { DraggableData, DraggableEvent } from 'react-draggable';
 
 export default function Background({
   items,
@@ -19,7 +20,7 @@ export default function Background({
   const containerRef = useRef<HTMLDivElement>(null);
   const textRefs = useRef<{ [key: number]: React.RefObject<HTMLDivElement> }>({});
 
-  const handleDrag = (id: number, e: any, data: any) => {
+  const handleDrag = (id: number, e: DraggableEvent, data: DraggableData) => {
     setItems(items.map(item =>
       item.id === id
         ? { ...item, position: { x: data.x, y: data.y } }
@@ -89,7 +90,7 @@ export default function Background({
     return 'bg-gradient-to-br from-blue-50 to-white';
   };
 
-  const handleTextDrag = (id: number, e: any, data: any) => {
+  const handleTextDrag = (id: number, e: DraggableEvent, data: DraggableData) => {
     if (!containerRef.current) return;
     onTextConfigChange(id, {
       position: {

@@ -1,10 +1,9 @@
 'use client';
 import React from 'react';
-import Draggable from 'react-draggable';
+import Draggable, { DraggableEvent, DraggableData } from 'react-draggable';
 import { TextItemProps } from '@/types/bookmark/index.d';
 
 export default function TextItem({
-  id,
   text,
   position,
   size,
@@ -23,8 +22,8 @@ export default function TextItem({
       transform: `rotate(${style.rotate}deg)`,
       width: style.direction === 'vertical' ? 'fit-content' : '100%',
       height: style.direction === 'vertical' ? '100%' : 'fit-content',
-      writingMode: style.direction === 'vertical' ? 'vertical-rl' : 'horizontal-tb' as any,
-      textOrientation: style.direction === 'vertical' ? 'upright' : 'mixed' as any,
+      writingMode: style.direction === 'vertical' ? 'vertical-rl' : 'horizontal-tb' as React.CSSProperties['writingMode'],
+      textOrientation: style.direction === 'vertical' ? 'upright' : 'mixed' as React.CSSProperties['textOrientation'],
       color: style.color || 'inherit',
     };
     return baseStyle;
