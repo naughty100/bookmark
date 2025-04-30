@@ -45,7 +45,7 @@ export default function OperationPanel({
   ];
 
   return (
-    <div className="w-80 h-screen bg-white border-l border-gray-200 flex flex-col">
+    <div className="w-100 h-screen bg-white border-l border-gray-200 flex flex-col">
       {/* Export Button */}
       <div className="p-4 border-b border-gray-200">
         <button
