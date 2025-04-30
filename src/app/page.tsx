@@ -23,7 +23,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Image 
-              src="/file.svg" 
+              src="/photo.svg" 
               alt="Bookmark Logo" 
               width={32} 
               height={32} 
@@ -76,7 +76,7 @@ export default function Home() {
             {/* 功能卡片 1 */}
             <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex-1">
               <div className="bg-blue-100 w-14 h-14 rounded-full flex items-center justify-center mb-4">
-                <Image src="/window.svg" alt="Customizable" width={24} height={24} className="w-6 h-6" />
+                <Image src="/diy.svg" alt="Customizable" width={24} height={24} className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-semibold mb-3 text-gray-800">完全自定义</h3>
               <p className="text-gray-600">自由调整背景、字体、颜色和布局，打造专属于你的书签墙。</p>
