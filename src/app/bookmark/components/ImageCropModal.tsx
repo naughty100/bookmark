@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, CSSProperties } from 'react';
 import ReactCrop, { Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { ImageCropModalProps } from '@/types/bookmark/index.d';
@@ -109,7 +109,7 @@ export default function ImageCropModal({
   };
 
   // 计算显示尺寸来适应模态框
-  const getImageDisplayStyle = () => {
+  const getImageDisplayStyle = (): CSSProperties => {
     if (!imgLoaded || imgDimensions.width === 0) return {};
 
     const aspectRatio = imgDimensions.width / imgDimensions.height;
@@ -120,20 +120,20 @@ export default function ImageCropModal({
       return { 
         maxWidth: '100%', 
         maxHeight: '500px',
-        objectFit: 'contain' 
+        objectFit: 'contain' as const
       };
     } else if (isExtremelyTall) {
       return { 
         maxHeight: '60vh', 
         maxWidth: '100%',
-        objectFit: 'contain' 
+        objectFit: 'contain' as const
       };
     }
     
     return { 
       maxHeight: '60vh', 
       maxWidth: '100%',
-      objectFit: 'contain' 
+      objectFit: 'contain' as const
     };
   };
 
