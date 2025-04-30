@@ -12,7 +12,7 @@ export const exportToImage = async ({ backgroundConfig, items, texts }: ExportCo
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('无法创建 canvas 上下文');
 
-  // 设置 canvas 尺寸为背景尺寸的 2 倍以获得高清效果
+  // 设置 canvas 尺寸为背景尺寸的 3 倍以获得高清效果
   const scale = 3;
   canvas.width = backgroundConfig.size.width * scale;
   canvas.height = backgroundConfig.size.height * scale;
@@ -146,35 +146,45 @@ export const exportToImage = async ({ backgroundConfig, items, texts }: ExportCo
     for (const text of sortedTexts) {
       ctx.save();
       
-      // 设置字体样式
-      ctx.font = `${text.style.fontSize}px ${text.style.fontFamily}`;
+      // 设置字体样式 - 确保与CSS中的设置完全匹配
+      const fontWeight = text.style.fontWeight || 'normal';
+      ctx.font = `${fontWeight} ${text.style.fontSize}px ${text.style.fontFamily || 'Arial'}`;
       ctx.fillStyle = text.style.color || '#000000';
       
-      // 移动到文本位置
-      ctx.translate(
-        text.position.x + text.size.width / 2,
-        text.position.y + text.size.height / 2
-      );
-      
-      // 应用旋转
-      ctx.rotate(text.style.rotate * Math.PI / 180);
-      
-      // 根据方向设置文本
+      // 精确计算文本在画布上的位置
+      // 水平或垂直文本的定位略有不同
       if (text.style.direction === 'vertical') {
         // 垂直文本
+        // 对于垂直文本，我们先计算总高度，然后根据文本内容调整位置以确保居中
         const chars = text.text.split('');
-        const lineHeight = text.style.fontSize * 1.2;
+        const lineHeight = text.style.fontSize * 1.2; // 行高系数保持与CSS一致
         const totalHeight = chars.length * lineHeight;
         
+        // 计算精确的起始位置，考虑到容器的大小和旋转角度
+        const textX = text.position.x + text.size.width / 2;
+        const textY = text.position.y + text.size.height / 2;
+        
+        ctx.translate(textX, textY);
+        ctx.rotate((text.style.rotate || 0) * Math.PI / 180);
+        
+        // 绘制每个字符，确保垂直排列正确对齐
         chars.forEach((char, index) => {
-          ctx.fillText(
-            char,
-            0,
-            -totalHeight / 2 + index * lineHeight
-          );
+          const charY = -totalHeight / 2 + index * lineHeight + text.style.fontSize / 2;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(char, 0, charY);
         });
       } else {
         // 水平文本
+        // 计算精确的文本位置坐标，考虑到文本旋转
+        const textX = text.position.x + text.size.width / 2;
+        const textY = text.position.y + text.size.height / 2;
+        
+        // 考虑旋转角度的计算
+        ctx.translate(textX, textY);
+        ctx.rotate((text.style.rotate || 0) * Math.PI / 180);
+        
+        // 使用精确对齐方式确保文本在容器中居中
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(text.text, 0, 0);
@@ -195,10 +205,10 @@ export const exportToImage = async ({ backgroundConfig, items, texts }: ExportCo
     });
   };
 
-  // 按顺序执行绘制
+  // 按顺序执行绘制 - 先背景，再书签，最后文字（确保文字在最上层）
   drawBackground();
   await drawBookmarks();
-  drawTexts();
+  drawTexts(); // 文字最后绘制，确保最高优先级
 
   // 返回 base64 格式的图片数据
   return canvas.toDataURL('image/png');

@@ -38,7 +38,7 @@ export default function TextItem({
       <div
         ref={nodeRef}
         onClick={onClick}
-        className={`select-none cursor-move group ${selected ? 'outline outline-2 outline-blue-500' : ''}`}
+        className={`select-none cursor-move group ${selected ? 'border border-dashed border-blue-500 rounded-md' : ''}`}
         style={{
           width: size.width,
           height: size.height,
