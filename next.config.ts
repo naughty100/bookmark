@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const repositoryName = 'bookmark'
+const repositoryName = 'squidmark'
 
 const nextConfig: NextConfig = {
   /* config options here */
