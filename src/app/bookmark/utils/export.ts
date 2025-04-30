@@ -147,8 +147,7 @@ export const exportToImage = async ({ backgroundConfig, items, texts }: ExportCo
       ctx.save();
       
       // 设置字体样式 - 确保与CSS中的设置完全匹配
-      const fontWeight = text.style.fontWeight || 'normal';
-      ctx.font = `${fontWeight} ${text.style.fontSize}px ${text.style.fontFamily || 'Arial'}`;
+      ctx.font = `${text.style.fontSize}px ${text.style.fontFamily || 'Arial'}`;
       ctx.fillStyle = text.style.color || '#000000';
       
       // 精确计算文本在画布上的位置
