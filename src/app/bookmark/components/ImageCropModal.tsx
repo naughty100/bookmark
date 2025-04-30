@@ -1,9 +1,8 @@
 'use client';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import ReactCrop, { Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { ImageCropModalProps } from '@/types/bookmark/index.d';
-import Image from 'next/image';
 
 export default function ImageCropModal({
   imageUrl,
@@ -19,22 +18,45 @@ export default function ImageCropModal({
     y: 0,
   });
   const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
+  const [imgDimensions, setImgDimensions] = useState({ width: 0, height: 0 });
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  // 预加载图片以获取实际尺寸
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      setImgDimensions({ width: img.width, height: img.height });
+      setImgLoaded(true);
+    };
+    img.src = imageUrl;
+  }, [imageUrl]);
 
   const onImageLoad = useCallback((img: HTMLImageElement) => {
     setImageRef(img);
-    // 根据图片比例初始化裁剪区域
-    const imgAspect = img.width / img.height;
-    let cropWidth = 50;
-    let cropHeight = aspectRatio ? 50 / aspectRatio : 50;
-
-    if (aspectRatio) {
-      if (imgAspect > aspectRatio) {
-        cropWidth = cropHeight * aspectRatio;
-      } else {
-        cropHeight = cropWidth / aspectRatio;
-      }
+    
+    // 计算适合的初始裁剪区域
+    const imgWidth = img.width;
+    const imgHeight = img.height;
+    const imgAspect = imgWidth / imgHeight;
+    
+    let cropWidth, cropHeight;
+    
+    // 处理异常长宽比的图片
+    if (imgAspect > 3) { // 处理特别宽的图片
+      cropWidth = 30;
+      cropHeight = aspectRatio ? 30 / aspectRatio : 30 * imgHeight / imgWidth;
+    } else if (imgAspect < 0.33) { // 处理特别高的图片
+      cropHeight = 30;
+      cropWidth = aspectRatio ? 30 * aspectRatio : 30 * imgWidth / imgHeight;
+    } else { // 正常比例的图片
+      cropWidth = 50;
+      cropHeight = aspectRatio ? 50 / aspectRatio : 50 * imgHeight / imgWidth;
     }
-
+    
+    // 确保裁剪框不会过大或过小
+    cropWidth = Math.min(cropWidth, 80);
+    cropHeight = Math.min(cropHeight, 80);
+    
     setCrop({
       unit: '%',
       width: cropWidth,
@@ -86,31 +108,58 @@ export default function ImageCropModal({
     }
   };
 
+  // 计算显示尺寸来适应模态框
+  const getImageDisplayStyle = () => {
+    if (!imgLoaded || imgDimensions.width === 0) return {};
+
+    const aspectRatio = imgDimensions.width / imgDimensions.height;
+    const isExtremelyWide = aspectRatio > 3;
+    const isExtremelyTall = aspectRatio < 0.33;
+    
+    if (isExtremelyWide) {
+      return { 
+        maxWidth: '100%', 
+        maxHeight: '500px',
+        objectFit: 'contain' 
+      };
+    } else if (isExtremelyTall) {
+      return { 
+        maxHeight: '60vh', 
+        maxWidth: '100%',
+        objectFit: 'contain' 
+      };
+    }
+    
+    return { 
+      maxHeight: '60vh', 
+      maxWidth: '100%',
+      objectFit: 'contain' 
+    };
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4">
         <h3 className="text-lg font-medium mb-4">裁剪图片</h3>
-        <div className="mb-4 overflow-auto max-h-[60vh]">
-          <ReactCrop
-            crop={crop}
-            onChange={(c) => setCrop(c)}
-            aspect={aspectRatio}
-            className="max-w-full"
-          >
-            {/* 注意: ReactCrop库可能需要使用原生img标签才能正常工作,
-                如果使用Next.js的Image组件导致裁剪功能不正常，
-                可以添加 {/* eslint-disable-next-line @next/next/no-img-element */}
-            <Image
-              src={imageUrl}
-              alt="裁剪预览"
-              onLoad={(e) => onImageLoad(e.currentTarget as HTMLImageElement)}
+        <div className="flex items-center justify-center mb-4 overflow-auto max-h-[70vh]">
+          <div className="relative" style={{ maxWidth: '100%' }}>
+            <ReactCrop
+              crop={crop}
+              onChange={(c) => setCrop(c)}
+              aspect={aspectRatio}
               className="max-w-full"
-              width={500}
-              height={500}
-              style={{ objectFit: "contain", width: "100%", height: "auto" }}
-              unoptimized={true}
-            />
-          </ReactCrop>
+              ruleOfThirds
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl}
+                alt="裁剪预览"
+                onLoad={(e) => onImageLoad(e.currentTarget)}
+                style={getImageDisplayStyle()}
+                className="max-w-full"
+              />
+            </ReactCrop>
+          </div>
         </div>
         <div className="flex justify-end space-x-2">
           <button
